@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,11 +31,17 @@ public class PlayerMoveScript : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		Vector2 relPos = WorldToRelative(transform.position);
-		Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-		Vector2 relInput = WorldToRelative(input);
+		MovePlayer();
+		RotatePlayer();
 
-		// Movement
+		// Snap the sprite to the nearest pixel.
+		sprite.transform.position = new Vector3(
+			Mathf.Round(transform.position.x), Mathf.Round(transform.position.y), 0);
+	}
+
+	void MovePlayer() {
+		Vector2 relPos = WorldToRelative(transform.position);
+		Vector2 relInput = WorldToRelative(GetInput());
 
 		hspeed = relInput.x * walkSpeed;
 
@@ -53,13 +59,15 @@ public class PlayerMoveScript : MonoBehaviour {
 
 		transform.position += RelativeToWorld(new Vector3(hspeed, vspeed, 0));
 		relPos = WorldToRelative(transform.position);
+	}
 
-		// Rotation
+	void RotatePlayer() {
+		Vector2 relPos = WorldToRelative(transform.position);
+		Vector2 relInput = WorldToRelative(GetInput());
 
 		if (relInput.x != 0 || relInput.y != 0) {
 			// Find the closest cardinal direction to player input.
-			float relInputAngle = Vector2.SignedAngle(relInput, Vector2.up) + 180;
-			int relInputDir = (int)Mathf.Floor((relInputAngle + 45) / 90) % 4;
+			int relInputDir = VectorDir(relInput);
 			int dirSign = DirSign(relInputDir);
 
 			// Check if the input direction is sideways relative to the floor.
@@ -74,10 +82,22 @@ public class PlayerMoveScript : MonoBehaviour {
 				}
 			}
 		}
+	}
 
-		// Snap the sprite to the nearest pixel.
-		sprite.transform.position = new Vector3(
-			Mathf.Round(transform.position.x), Mathf.Round(transform.position.y), 0);
+	Vector2 GetInput() {
+		return new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+	}
+
+	float VectorAngle(Vector2 vector) {
+		return Vector2.SignedAngle(vector, Vector2.up) + 180;
+	}
+
+	int AngleDir(float angle) {
+		return (int)Mathf.Floor((angle + 45) / 90) % 4;
+	}
+
+	int VectorDir(Vector2 vector) {
+		return AngleDir(VectorAngle(vector));
 	}
 
 	Vector2 WorldToRelative(Vector2 worldPos) {

@@ -142,8 +142,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkSpeed: 2
-  jumpSpeed: 7
-  gravity: 1
+  jumpSpeed: 5
+  gravity: 0.5
   frameThickness: 1
 --- !u!4 &38704841
 Transform:
