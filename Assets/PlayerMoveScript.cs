@@ -1,14 +1,16 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-enum dirs { BOTTOM, LEFT, TOP, RIGHT };
 
 public class PlayerMoveScript : MonoBehaviour {
 	public float walkSpeed = 1;
 	public float jumpSpeed = 7;
 	public float gravity = 1;
 	public int frameThickness = 1;
+
+	enum dirs { BOTTOM, LEFT, TOP, RIGHT };
+	Vector2[] dirVectors = { Vector2.down, Vector2.left, Vector2.up, Vector2.right };
 
 	int floorDir = (int)dirs.BOTTOM;
 	float frameDist;
@@ -62,23 +64,30 @@ public class PlayerMoveScript : MonoBehaviour {
 	}
 
 	void RotatePlayer() {
-		Vector2 relPos = WorldToRelative(transform.position);
-		Vector2 relInput = WorldToRelative(GetInput());
+		Vector2 input = GetInput();
 
-		if (relInput.x != 0 || relInput.y != 0) {
-			// Find the closest cardinal direction to player input.
-			int relInputDir = VectorDir(relInput);
-			int dirSign = DirSign(relInputDir);
+		if (input.x != 0 || input.y != 0) {
+			int inputDir = VectorDir(input);
+			Vector2 inputDirVector = dirVectors[inputDir];
+
+			int relInputDir = WorldToRelative(inputDir);
 
 			// Check if the input direction is sideways relative to the floor.
 			if (relInputDir % 2 == 1) {
-				// Check if the player is against the wall they are moving toward.
-				if (relPos.x == (frameDist - halfWidth) * dirSign) {
-					// Move and rotate the player so their feet are on the wall.
-					transform.position += RelativeToWorld(new Vector3(halfWidth * dirSign, halfWidth));
-					transform.Rotate(new Vector3(0, 0, 90 * dirSign));
+				// Check if the player is closest to the wall they are moving toward.
+				if (Vector2.Angle(inputDirVector, transform.position) <= 52) {
+					int dirChange = DirSign(relInputDir);
 
-					floorDir = RelativeToWorld(relInputDir);
+					// Move and rotate the player.
+					transform.position += RelativeToWorld(new Vector3(halfWidth * dirChange, halfWidth));
+					transform.Rotate(new Vector3(0, 0, 90 * dirChange));
+
+					floorDir = inputDir;
+
+					float newHspeed = vspeed * dirChange;
+					float newVspeed = hspeed * -dirChange;
+					hspeed = newHspeed;
+					vspeed = newVspeed;
 				}
 			}
 		}
@@ -98,6 +107,10 @@ public class PlayerMoveScript : MonoBehaviour {
 
 	int VectorDir(Vector2 vector) {
 		return AngleDir(VectorAngle(vector));
+	}
+
+	int DirSign(int dir) {
+		return dir > 1 ? 1 : -1;
 	}
 
 	Vector2 WorldToRelative(Vector2 worldPos) {
@@ -140,9 +153,5 @@ public class PlayerMoveScript : MonoBehaviour {
 
 	int RelativeToWorld(int relDir) {
 		return (relDir + floorDir) % 4;
-	}
-
-	int DirSign(int dir) {
-		return dir > 1 ? 1 : -1;
 	}
 }
