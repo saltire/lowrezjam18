@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class PlayerMoveScript : MonoBehaviour {
 	public float walkSpeed = 1;
 	public float jumpSpeed = 7;
