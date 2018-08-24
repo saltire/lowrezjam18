@@ -19,6 +19,10 @@ public class PlayerMoveScript : MonoBehaviour {
 	float hspeed = 0;
 	float vspeed = 0;
 
+	// Margin allowances on various conditions for changing direction.
+	float angleThreshold = 7;
+	float cornerThreshold = 0.5f;
+
 	SpriteRenderer sprite;
 
 	void Start() {
@@ -63,6 +67,7 @@ public class PlayerMoveScript : MonoBehaviour {
 	}
 
 	void RotatePlayer() {
+		Vector2 relPos = WorldToRelative(transform.position);
 		Vector2 input = GetInput();
 
 		if (input.x != 0 || input.y != 0) {
@@ -70,24 +75,30 @@ public class PlayerMoveScript : MonoBehaviour {
 			Vector2 inputDirVector = dirVectors[inputDir];
 
 			int relInputDir = WorldToRelative(inputDir);
+			int dirChange = 0;
 
-			// Check if the input direction is sideways relative to the floor.
-			if (relInputDir % 2 == 1) {
-				// Check if the player is closest to the wall they are moving toward.
-				if (Vector2.Angle(inputDirVector, transform.position) <= 52) {
-					int dirChange = DirSign(relInputDir);
+			// Check if the input direction is sideways relative to the floor,
+			// and the player is closest to the wall they are moving toward.
+			if (relInputDir % 2 == 1 &&
+				Vector2.Angle(inputDirVector, transform.position) <= 45 + angleThreshold) {
+				dirChange = DirSign(relInputDir);
+			}
+			// Alternatively check if the player is against a wall and moving up it.
+			else if (relInputDir == 2 && Mathf.Abs(relPos.x) > frameDist - halfWidth - cornerThreshold) {
+				dirChange = (int)Mathf.Sign(relPos.x);
+			}
 
-					// Move and rotate the player.
-					transform.position += RelativeToWorld(new Vector3(halfWidth * dirChange, halfWidth));
-					transform.Rotate(new Vector3(0, 0, 90 * dirChange));
+			if (dirChange != 0) {
+				// Move and rotate the player.
+				transform.position += RelativeToWorld(new Vector3(halfWidth * dirChange, halfWidth));
+				transform.Rotate(new Vector3(0, 0, 90 * dirChange));
 
-					floorDir = inputDir;
+				floorDir = (floorDir - dirChange + 4) % 4;
 
-					float newHspeed = vspeed * dirChange;
-					float newVspeed = hspeed * -dirChange;
-					hspeed = newHspeed;
-					vspeed = newVspeed;
-				}
+				float newHspeed = vspeed * dirChange;
+				float newVspeed = hspeed * -dirChange;
+				hspeed = newHspeed;
+				vspeed = newVspeed;
 			}
 		}
 	}
