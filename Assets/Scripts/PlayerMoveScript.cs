@@ -1,20 +1,20 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMoveScript : MonoBehaviour {
-	public float walkSpeed = 2;
+	public float walkSpeed = 120;
 	public float horizInertiaGround = 0.1f;
 	public float horizInertiaAir = 0.3f;
-	public float jumpSpeed = 5;
-	public float gravity = 0.5f;
+	public float jumpSpeed = 300;
+	public float gravity = 30;
 	public float maxRotateDistance = 12;
 
 	public float chargeTime = 1;
 	public Color glowColor;
 	public float pulseFrequency = 8;
 	public float pulseAmount = .1f;
-	public float dashSpeed = 3;
+	public float dashSpeed = 180;
 
 	enum dirs { BOTTOM, LEFT, TOP, RIGHT };
 	Vector2[] dirVectors = { Vector2.down, Vector2.left, Vector2.up, Vector2.right };
@@ -78,13 +78,14 @@ public class PlayerMoveScript : MonoBehaviour {
 
 		bool onGround = relPos.y == -frameDist;
 
-		hspeed = Mathf.Min(walkSpeed,
-			relMoveInput.x * walkSpeed + hspeed * (onGround ? horizInertiaGround : horizInertiaAir));
+		float maxHspeed = walkSpeed * Time.deltaTime;
+		hspeed = Mathf.Min(maxHspeed,
+			relMoveInput.x * maxHspeed + hspeed * (onGround ? horizInertiaGround : horizInertiaAir));
 
 		if (onGround && Input.GetButtonDown(input.jump)) {
-			vspeed += jumpSpeed;
+			vspeed += jumpSpeed * Time.deltaTime;
 		}
-		vspeed -= gravity;
+		vspeed -= gravity * Time.deltaTime;
 
 		hspeed = Mathf.Clamp(hspeed,
 			-frameDist + halfWidth - relPos.x,
@@ -193,7 +194,8 @@ public class PlayerMoveScript : MonoBehaviour {
 	}
 
 	void DashPlayer() {
-		transform.position = Vector2.MoveTowards(transform.position, dashTarget, dashSpeed);
+		transform.position = Vector2.MoveTowards(
+			transform.position, dashTarget, dashSpeed * Time.deltaTime);
 	}
 
 	float VectorAngle(Vector2 vector) {

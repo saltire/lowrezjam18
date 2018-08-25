@@ -108,17 +108,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0629532adfbb0a24d96fcbf4ad771f67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 2
+  walkSpeed: 100
   horizInertiaGround: 0.1
   horizInertiaAir: 0.3
-  jumpSpeed: 5
-  gravity: 0.5
+  jumpSpeed: 300
+  gravity: 30
   maxRotateDistance: 12
   chargeTime: 1
-  glowColor: {r: 0, g: 0, b: 0, a: 0}
+  glowColor: {r: 0.5, g: 0.875, b: 1, a: 1}
   pulseFrequency: 8
   pulseAmount: 0.1
-  dashSpeed: 3
+  dashSpeed: 180
 --- !u!114 &114609016826933152
 MonoBehaviour:
   m_ObjectHideFlags: 1
