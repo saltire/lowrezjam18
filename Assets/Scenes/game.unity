@@ -413,20 +413,37 @@ Prefab:
       propertyPath: player2
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114322485971964408, guid: deac626462a3d4c428947a4915bb1c69,
+    - target: {fileID: 0}
+      propertyPath: glowColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: glowColor.g
+      value: 0.5019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: glowColor.b
+      value: 0.8770196
+      objectReference: {fileID: 0}
+    - target: {fileID: 114424996993975450, guid: deac626462a3d4c428947a4915bb1c69,
         type: 2}
       propertyPath: glowColor.r
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114322485971964408, guid: deac626462a3d4c428947a4915bb1c69,
+    - target: {fileID: 114424996993975450, guid: deac626462a3d4c428947a4915bb1c69,
         type: 2}
       propertyPath: glowColor.g
       value: 0.5019608
       objectReference: {fileID: 0}
-    - target: {fileID: 114322485971964408, guid: deac626462a3d4c428947a4915bb1c69,
+    - target: {fileID: 114424996993975450, guid: deac626462a3d4c428947a4915bb1c69,
         type: 2}
       propertyPath: glowColor.b
-      value: 0.8770196
+      value: 0.8754902
+      objectReference: {fileID: 0}
+    - target: {fileID: 114424996993975450, guid: deac626462a3d4c428947a4915bb1c69,
+        type: 2}
+      propertyPath: glowColor.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: deac626462a3d4c428947a4915bb1c69, type: 2}
@@ -469,6 +486,26 @@ Prefab:
     - target: {fileID: 4917501340752350, guid: deac626462a3d4c428947a4915bb1c69, type: 2}
       propertyPath: m_RootOrder
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114424996993975450, guid: deac626462a3d4c428947a4915bb1c69,
+        type: 2}
+      propertyPath: glowColor.r
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114424996993975450, guid: deac626462a3d4c428947a4915bb1c69,
+        type: 2}
+      propertyPath: glowColor.g
+      value: 0.875
+      objectReference: {fileID: 0}
+    - target: {fileID: 114424996993975450, guid: deac626462a3d4c428947a4915bb1c69,
+        type: 2}
+      propertyPath: glowColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114424996993975450, guid: deac626462a3d4c428947a4915bb1c69,
+        type: 2}
+      propertyPath: glowColor.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: deac626462a3d4c428947a4915bb1c69, type: 2}

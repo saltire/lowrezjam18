@@ -21,7 +21,6 @@ GameObject:
   - component: {fileID: 4917501340752350}
   - component: {fileID: 61661188908791378}
   - component: {fileID: 114424996993975450}
-  - component: {fileID: 114322485971964408}
   - component: {fileID: 114609016826933152}
   m_Layer: 0
   m_Name: player
@@ -98,21 +97,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 10, y: 10}
   m_EdgeRadius: 0
---- !u!114 &114322485971964408
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1446530866578568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 735ba65ca922e054e9788e564a8e071d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chargeTime: 1
-  glowColor: {r: 0.5, g: 0.875, b: 1, a: 1}
-  pulseFrequency: 8
-  pulseAmount: 0.1
 --- !u!114 &114424996993975450
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -130,6 +114,11 @@ MonoBehaviour:
   jumpSpeed: 5
   gravity: 0.5
   maxRotateDistance: 12
+  chargeTime: 1
+  glowColor: {r: 0, g: 0, b: 0, a: 0}
+  pulseFrequency: 8
+  pulseAmount: 0.1
+  dashSpeed: 3
 --- !u!114 &114609016826933152
 MonoBehaviour:
   m_ObjectHideFlags: 1

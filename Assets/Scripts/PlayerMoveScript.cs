@@ -10,9 +10,14 @@ public class PlayerMoveScript : MonoBehaviour {
 	public float gravity = 0.5f;
 	public float maxRotateDistance = 12;
 
+	public float chargeTime = 1;
+	public Color glowColor;
+	public float pulseFrequency = 8;
+	public float pulseAmount = .1f;
+	public float dashSpeed = 3;
+
 	enum dirs { BOTTOM, LEFT, TOP, RIGHT };
 	Vector2[] dirVectors = { Vector2.down, Vector2.left, Vector2.up, Vector2.right };
-
 	int frameDist = 31;
 	int floorDir = (int)dirs.BOTTOM;
 	float halfWidth;
@@ -25,21 +30,42 @@ public class PlayerMoveScript : MonoBehaviour {
 	float angleThreshold = 7;
 	float cornerThreshold = 0.5f;
 
+	float chargeTimeElapsed = 0;
+	Plane[] walls;
+	Vector2 dashTarget;
+	public bool dashing { get; private set; }
+
+	Material mat;
 	SpriteRenderer sprite;
 	PlayerInputScript input;
 
 	void Start() {
+		mat = GetComponentInChildren<SpriteRenderer>().material;
 		sprite = GetComponentInChildren<SpriteRenderer>();
 		input = GetComponent<PlayerInputScript>();
 
 		BoxCollider2D collider = GetComponent<BoxCollider2D>();
 		halfWidth = collider.size.x / 2;
 		height = collider.size.y;
+
+		walls = new Plane[] {
+			new Plane(Vector2.up, Vector2.down * frameDist),
+			new Plane(Vector2.right, Vector2.left * frameDist),
+			new Plane(Vector2.down, Vector2.up * frameDist),
+			new Plane(Vector2.left, Vector2.right * frameDist),
+		};
 	}
 
-	void FixedUpdate() {
-		MovePlayer();
-		RotatePlayer();
+	void Update() {
+		CheckDash();
+
+		if (dashing) {
+			DashPlayer();
+		}
+		else {
+			MovePlayer();
+			RotatePlayer();
+		}
 
 		// Snap the sprite to the nearest pixel.
 		sprite.transform.position = new Vector3(
@@ -120,6 +146,54 @@ public class PlayerMoveScript : MonoBehaviour {
 				floorDir = (floorDir - dirChange + 4) % 4;
 			}
 		}
+	}
+
+	void CheckDash() {
+		if (Input.GetButton(input.charge)) {
+			chargeTimeElapsed += Time.deltaTime;
+
+			float chargeAmount = Mathf.Clamp01(chargeTimeElapsed / chargeTime);
+			float alpha = chargeAmount * (1 - pulseAmount);
+
+			if (chargeTimeElapsed >= chargeTime) {
+				alpha += Mathf.Sin(Mathf.PI * (chargeTimeElapsed - chargeTime) * pulseFrequency) * pulseAmount;
+			}
+
+			mat.SetColor("_EmissionColor", Color.Lerp(Color.clear, glowColor, alpha));
+		}
+		else if (Input.GetButtonUp(input.charge)) {
+			Debug.Log("Button up");
+			if (chargeTimeElapsed >= chargeTime) {
+				Vector3 aimInput = input.GetAimInput();
+
+				if (aimInput.magnitude > 0) {
+					Ray dashDirection = new Ray(transform.position, aimInput);
+					float shortestDist = 100;
+					float dist;
+
+					for (int i = 0; i < 4; i++) {
+						bool forward = walls[i].Raycast(dashDirection, out dist);
+
+						if (forward && dist < shortestDist) {
+							shortestDist = dist;
+							Vector2 target = dashDirection.GetPoint(dist);
+
+							if (Mathf.Abs(target.x) <= frameDist && Mathf.Abs(target.y) <= frameDist) {
+								dashing = true;
+								dashTarget = target;
+							}
+						}
+					}
+				}
+			}
+
+			chargeTimeElapsed = 0;
+			mat.SetColor("_EmissionColor", Color.clear);
+		}
+	}
+
+	void DashPlayer() {
+		transform.position = Vector2.MoveTowards(transform.position, dashTarget, dashSpeed);
 	}
 
 	float VectorAngle(Vector2 vector) {
