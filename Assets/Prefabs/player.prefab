@@ -118,7 +118,7 @@ MonoBehaviour:
   glowColor: {r: 0.5, g: 0.875, b: 1, a: 1}
   pulseFrequency: 8
   pulseAmount: 0.1
-  dashSpeed: 180
+  dashSpeed: 300
 --- !u!114 &114609016826933152
 MonoBehaviour:
   m_ObjectHideFlags: 1

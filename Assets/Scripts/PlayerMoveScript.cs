@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,11 +14,11 @@ public class PlayerMoveScript : MonoBehaviour {
 	public Color glowColor;
 	public float pulseFrequency = 8;
 	public float pulseAmount = .1f;
-	public float dashSpeed = 180;
+	public float dashSpeed = 300;
 
 	enum dirs { BOTTOM, LEFT, TOP, RIGHT };
 	Vector2[] dirVectors = { Vector2.down, Vector2.left, Vector2.up, Vector2.right };
-	int frameDist = 31;
+	float frameDist = 31;
 	int floorDir = (int)dirs.BOTTOM;
 	float halfWidth;
 	float height;
@@ -124,27 +124,7 @@ public class PlayerMoveScript : MonoBehaviour {
 			}
 
 			if (dirChange != 0) {
-				if (dirChange == 2) {
-					// Move and rotate the player 180 degrees.
-					transform.position += RelativeToWorld(new Vector2(0, height));
-					transform.Rotate(new Vector3(0, 0, 180));
-
-					hspeed = -hspeed;
-					vspeed = -vspeed;
-				}
-				else {
-					// Move and rotate the player 90 degrees.
-					transform.position += RelativeToWorld(new Vector2(halfWidth * dirChange, halfWidth));
-					transform.Rotate(new Vector3(0, 0, 90 * dirChange));
-
-					// Swap horizontal speed and vertical speed.
-					float newHspeed = vspeed * dirChange;
-					float newVspeed = hspeed * -dirChange;
-					hspeed = newHspeed;
-					vspeed = newVspeed;
-				}
-
-				floorDir = (floorDir - dirChange + 4) % 4;
+				DoRotation(dirChange);
 			}
 		}
 	}
@@ -163,7 +143,6 @@ public class PlayerMoveScript : MonoBehaviour {
 			mat.SetColor("_EmissionColor", Color.Lerp(Color.clear, glowColor, alpha));
 		}
 		else if (Input.GetButtonUp(input.charge)) {
-			Debug.Log("Button up");
 			if (chargeTimeElapsed >= chargeTime) {
 				Vector3 aimInput = input.GetAimInput();
 
@@ -172,6 +151,8 @@ public class PlayerMoveScript : MonoBehaviour {
 					float shortestDist = 100;
 					float dist;
 
+					float maxHitCoord = frameDist + cornerThreshold;
+
 					for (int i = 0; i < 4; i++) {
 						bool forward = walls[i].Raycast(dashDirection, out dist);
 
@@ -179,9 +160,14 @@ public class PlayerMoveScript : MonoBehaviour {
 							shortestDist = dist;
 							Vector2 target = dashDirection.GetPoint(dist);
 
-							if (Mathf.Abs(target.x) <= frameDist && Mathf.Abs(target.y) <= frameDist) {
+							if (Mathf.Abs(target.x) <= maxHitCoord && Mathf.Abs(target.y) <= maxHitCoord) {
+								float maxRelX = frameDist - halfWidth;
+								dashTarget = (i % 2 == 1) ?
+									new Vector2(target.x, Mathf.Clamp(target.y, -maxRelX, maxRelX)) :
+									new Vector2(Mathf.Clamp(target.x, -maxRelX, maxRelX), target.y);
 								dashing = true;
-								dashTarget = target;
+
+								DoRotation((floorDir - i + 4) % 4);
 							}
 						}
 					}
@@ -193,9 +179,36 @@ public class PlayerMoveScript : MonoBehaviour {
 		}
 	}
 
+	void DoRotation(int dirChange) {
+		if (dirChange == 2) {
+			// Move and rotate the player 180 degrees.
+			transform.position += RelativeToWorld(new Vector2(0, height));
+			transform.Rotate(new Vector3(0, 0, 180));
+
+			hspeed = -hspeed;
+			vspeed = -vspeed;
+		}
+		else {
+			// Move and rotate the player 90 degrees.
+			transform.position += RelativeToWorld(new Vector2(halfWidth * dirChange, halfWidth));
+			transform.Rotate(new Vector3(0, 0, 90 * dirChange));
+
+			float newHspeed = vspeed * dirChange;
+			float newVspeed = hspeed * -dirChange;
+			hspeed = newHspeed;
+			vspeed = newVspeed;
+		}
+
+		floorDir = (floorDir - dirChange + 4) % 4;
+	}
+
 	void DashPlayer() {
-		transform.position = Vector2.MoveTowards(
-			transform.position, dashTarget, dashSpeed * Time.deltaTime);
+		transform.position = Vector2.MoveTowards(transform.position, dashTarget,
+			dashSpeed * Time.deltaTime);
+
+		if ((Vector2)transform.position == dashTarget) {
+			dashing = false;
+		}
 	}
 
 	float VectorAngle(Vector2 vector) {
