@@ -10,6 +10,7 @@ public class PlayerMoveScript : MonoBehaviour {
 	public float gravity = 0.5f;
 	public float maxRotateDistance = 12;
 	public int frameThickness = 1;
+	public bool player2 = false;
 
 	enum dirs { BOTTOM, LEFT, TOP, RIGHT };
 	Vector2[] dirVectors = { Vector2.down, Vector2.left, Vector2.up, Vector2.right };
@@ -56,7 +57,7 @@ public class PlayerMoveScript : MonoBehaviour {
 		hspeed = Mathf.Min(walkSpeed,
 			relInput.x * walkSpeed + hspeed * (onGround ? horizInertiaGround : horizInertiaAir));
 
-		if (onGround && Input.GetButtonDown("Jump")) {
+		if (onGround && Input.GetButtonDown("Jump" + (player2 ? " p2" : ""))) {
 			vspeed += jumpSpeed;
 		}
 		vspeed -= gravity;
@@ -124,7 +125,9 @@ public class PlayerMoveScript : MonoBehaviour {
 	}
 
 	Vector2 GetInput() {
-		return new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+		return new Vector2(
+			Input.GetAxis("Horizontal" + (player2 ? " p2" : "")),
+			Input.GetAxis("Vertical" + (player2 ? " p2" : "")));
 	}
 
 	float VectorAngle(Vector2 vector) {
