@@ -408,6 +408,26 @@ Prefab:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: e11bb0694c330464887ecae292b350fb, type: 2}
+    - target: {fileID: 114609016826933152, guid: deac626462a3d4c428947a4915bb1c69,
+        type: 2}
+      propertyPath: player2
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114322485971964408, guid: deac626462a3d4c428947a4915bb1c69,
+        type: 2}
+      propertyPath: glowColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114322485971964408, guid: deac626462a3d4c428947a4915bb1c69,
+        type: 2}
+      propertyPath: glowColor.g
+      value: 0.5019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 114322485971964408, guid: deac626462a3d4c428947a4915bb1c69,
+        type: 2}
+      propertyPath: glowColor.b
+      value: 0.8770196
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: deac626462a3d4c428947a4915bb1c69, type: 2}
   m_IsPrefabAsset: 0

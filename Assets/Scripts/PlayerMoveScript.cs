@@ -9,14 +9,12 @@ public class PlayerMoveScript : MonoBehaviour {
 	public float jumpSpeed = 5;
 	public float gravity = 0.5f;
 	public float maxRotateDistance = 12;
-	public int frameThickness = 1;
-	public bool player2 = false;
 
 	enum dirs { BOTTOM, LEFT, TOP, RIGHT };
 	Vector2[] dirVectors = { Vector2.down, Vector2.left, Vector2.up, Vector2.right };
 
+	int frameDist = 31;
 	int floorDir = (int)dirs.BOTTOM;
-	float frameDist;
 	float halfWidth;
 	float height;
 
@@ -28,11 +26,11 @@ public class PlayerMoveScript : MonoBehaviour {
 	float cornerThreshold = 0.5f;
 
 	SpriteRenderer sprite;
+	PlayerInputScript input;
 
 	void Start() {
-		frameDist = 32 - frameThickness;
-
 		sprite = GetComponentInChildren<SpriteRenderer>();
+		input = GetComponent<PlayerInputScript>();
 
 		BoxCollider2D collider = GetComponent<BoxCollider2D>();
 		halfWidth = collider.size.x / 2;
@@ -50,14 +48,14 @@ public class PlayerMoveScript : MonoBehaviour {
 
 	void MovePlayer() {
 		Vector2 relPos = WorldToRelative(transform.position);
-		Vector2 relInput = WorldToRelative(GetInput());
+		Vector2 relMoveInput = WorldToRelative(input.GetMoveInput());
 
 		bool onGround = relPos.y == -frameDist;
 
 		hspeed = Mathf.Min(walkSpeed,
-			relInput.x * walkSpeed + hspeed * (onGround ? horizInertiaGround : horizInertiaAir));
+			relMoveInput.x * walkSpeed + hspeed * (onGround ? horizInertiaGround : horizInertiaAir));
 
-		if (onGround && Input.GetButtonDown("Jump" + (player2 ? " p2" : ""))) {
+		if (onGround && Input.GetButtonDown(input.jump)) {
 			vspeed += jumpSpeed;
 		}
 		vspeed -= gravity;
@@ -75,10 +73,10 @@ public class PlayerMoveScript : MonoBehaviour {
 
 	void RotatePlayer() {
 		Vector2 relPos = WorldToRelative(transform.position);
-		Vector2 input = GetInput();
+		Vector2 moveInput = input.GetMoveInput();
 
-		if (input.x != 0 || input.y != 0) {
-			int inputDir = VectorDir(input);
+		if (moveInput.magnitude > 0) {
+			int inputDir = VectorDir(moveInput);
 			Vector2 inputDirVector = dirVectors[inputDir];
 			float distanceFromDirFloor = Mathf.Abs(inputDirVector.x != 0 ?
 				inputDirVector.x * frameDist - transform.position.x :
@@ -122,12 +120,6 @@ public class PlayerMoveScript : MonoBehaviour {
 				floorDir = (floorDir - dirChange + 4) % 4;
 			}
 		}
-	}
-
-	Vector2 GetInput() {
-		return new Vector2(
-			Input.GetAxis("Horizontal" + (player2 ? " p2" : "")),
-			Input.GetAxis("Vertical" + (player2 ? " p2" : "")));
 	}
 
 	float VectorAngle(Vector2 vector) {
