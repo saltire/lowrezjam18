@@ -143,8 +143,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkSpeed: 2
+  horizInertiaGround: 0.1
+  horizInertiaAir: 0.3
   jumpSpeed: 5
   gravity: 0.5
+  maxRotateDistance: 12
   frameThickness: 1
 --- !u!4 &38704841
 Transform:

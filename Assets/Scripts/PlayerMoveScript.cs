@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMoveScript : MonoBehaviour {
-	public float walkSpeed = 1;
-	public float jumpSpeed = 7;
-	public float gravity = 1;
+	public float walkSpeed = 2;
+	public float horizInertiaGround = 0.1f;
+	public float horizInertiaAir = 0.3f;
+	public float jumpSpeed = 5;
+	public float gravity = 0.5f;
+	public float maxRotateDistance = 12;
 	public int frameThickness = 1;
 
 	enum dirs { BOTTOM, LEFT, TOP, RIGHT };
@@ -48,9 +51,12 @@ public class PlayerMoveScript : MonoBehaviour {
 		Vector2 relPos = WorldToRelative(transform.position);
 		Vector2 relInput = WorldToRelative(GetInput());
 
-		hspeed = relInput.x * walkSpeed;
+		bool onGround = relPos.y == -frameDist;
 
-		if (relPos.y == -frameDist && Input.GetButtonDown("Jump")) {
+		hspeed = Mathf.Min(walkSpeed,
+			relInput.x * walkSpeed + hspeed * (onGround ? horizInertiaGround : horizInertiaAir));
+
+		if (onGround && Input.GetButtonDown("Jump")) {
 			vspeed += jumpSpeed;
 		}
 		vspeed -= gravity;
@@ -73,15 +79,18 @@ public class PlayerMoveScript : MonoBehaviour {
 		if (input.x != 0 || input.y != 0) {
 			int inputDir = VectorDir(input);
 			Vector2 inputDirVector = dirVectors[inputDir];
+			float distanceFromDirFloor = Mathf.Abs(inputDirVector.x != 0 ?
+				inputDirVector.x * frameDist - transform.position.x :
+				inputDirVector.y * frameDist - transform.position.y);
 
 			int relInputDir = WorldToRelative(inputDir);
 			int dirChange = 0;
 
-			// Check if the input direction is sideways relative to the floor,
-			// and the player is closest to the wall they are moving toward.
-			if (relInputDir % 2 == 1 &&
+			// Check if the input direction is away from the floor,
+			// and the player is closest to the side they are moving toward.
+			if (relInputDir > 0 && distanceFromDirFloor < maxRotateDistance &&
 				Vector2.Angle(inputDirVector, transform.position) <= 45 + angleThreshold) {
-				dirChange = DirSign(relInputDir);
+				dirChange = relInputDir == 2 ? 2 : DirSign(relInputDir);
 			}
 			// Alternatively check if the player is against a wall and moving up it.
 			else if (relInputDir == 2 && Mathf.Abs(relPos.x) > frameDist - halfWidth - cornerThreshold) {
@@ -89,16 +98,27 @@ public class PlayerMoveScript : MonoBehaviour {
 			}
 
 			if (dirChange != 0) {
-				// Move and rotate the player.
-				transform.position += RelativeToWorld(new Vector3(halfWidth * dirChange, halfWidth));
-				transform.Rotate(new Vector3(0, 0, 90 * dirChange));
+				if (dirChange == 2) {
+					// Move and rotate the player 180 degrees.
+					transform.position += RelativeToWorld(new Vector2(0, height));
+					transform.Rotate(new Vector3(0, 0, 180));
+
+					hspeed = -hspeed;
+					vspeed = -vspeed;
+				}
+				else {
+					// Move and rotate the player 90 degrees.
+					transform.position += RelativeToWorld(new Vector2(halfWidth * dirChange, halfWidth));
+					transform.Rotate(new Vector3(0, 0, 90 * dirChange));
+
+					// Swap horizontal speed and vertical speed.
+					float newHspeed = vspeed * dirChange;
+					float newVspeed = hspeed * -dirChange;
+					hspeed = newHspeed;
+					vspeed = newVspeed;
+				}
 
 				floorDir = (floorDir - dirChange + 4) % 4;
-
-				float newHspeed = vspeed * dirChange;
-				float newVspeed = hspeed * -dirChange;
-				hspeed = newHspeed;
-				vspeed = newVspeed;
 			}
 		}
 	}
