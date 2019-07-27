@@ -13,12 +13,13 @@ public class PlayerInputScript : MonoBehaviour {
 	public string charge { get; private set; }
 
 	void Start() {
-		moveHorizontal = "Horizontal Move" + (player2 ? " p2" : "");
-		moveVertical = "Vertical Move" + (player2 ? " p2" : "");
-		aimHorizontal = "Horizontal Aim" + (player2 ? " p2" : "");
-		aimVertical = "Vertical Aim" + (player2 ? " p2" : "");
-		jump = "Jump" + (player2 ? " p2" : "");
-		charge = "Charge" + (player2 ? " p2" : "");
+		string suffix = player2 ? " p2" : "";
+		moveHorizontal = "Horizontal Move" + suffix;
+		moveVertical = "Vertical Move" + suffix;
+		aimHorizontal = "Horizontal Aim" + suffix;
+		aimVertical = "Vertical Aim" + suffix;
+		jump = "Jump" + suffix;
+		charge = "Charge" + suffix;
 	}
 
 	public Vector2 GetMoveInput() {

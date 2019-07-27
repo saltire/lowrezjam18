@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,11 +35,13 @@ public class PlayerMoveScript : MonoBehaviour {
 	Vector2 dashTarget;
 	public bool dashing { get; private set; }
 
+	LineRenderer line;
 	Material mat;
 	SpriteRenderer sprite;
 	PlayerInputScript input;
 
 	void Start() {
+		line = GetComponent<LineRenderer>();
 		mat = GetComponentInChildren<SpriteRenderer>().material;
 		sprite = GetComponentInChildren<SpriteRenderer>();
 		input = GetComponent<PlayerInputScript>();
@@ -54,6 +56,8 @@ public class PlayerMoveScript : MonoBehaviour {
 			new Plane(Vector2.down, Vector2.up * frameDist),
 			new Plane(Vector2.left, Vector2.right * frameDist),
 		};
+
+		line.material.SetColor("_EmissionColor", glowColor);
 	}
 
 	void Update() {
@@ -140,6 +144,13 @@ public class PlayerMoveScript : MonoBehaviour {
 				alpha += Mathf.Sin(Mathf.PI * (chargeTimeElapsed - chargeTime) * pulseFrequency) * pulseAmount;
 			}
 
+			line.enabled = true;
+			Vector3 lineOrigin = sprite.transform.position - (Vector3)dirVectors[floorDir] * halfWidth;
+			line.SetPositions(new Vector3[] {
+				lineOrigin,
+				lineOrigin + (Vector3)input.GetAimInput().normalized * 100,
+			});
+
 			mat.SetColor("_EmissionColor", Color.Lerp(Color.clear, glowColor, alpha));
 		}
 		else if (Input.GetButtonUp(input.charge)) {
@@ -175,6 +186,7 @@ public class PlayerMoveScript : MonoBehaviour {
 			}
 
 			chargeTimeElapsed = 0;
+			line.enabled = false;
 			mat.SetColor("_EmissionColor", Color.clear);
 		}
 	}
