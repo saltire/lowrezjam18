@@ -16,17 +16,11 @@ public class PlayerInputScript : MonoBehaviour {
 		string suffix = player2 ? " p2" : "";
 		moveHorizontal = "Horizontal Move" + suffix;
 		moveVertical = "Vertical Move" + suffix;
-		aimHorizontal = "Horizontal Aim" + suffix;
-		aimVertical = "Vertical Aim" + suffix;
 		jump = "Jump" + suffix;
 		charge = "Charge" + suffix;
 	}
 
 	public Vector2 GetMoveInput() {
 		return new Vector2(Input.GetAxis(moveHorizontal), Input.GetAxis(moveVertical));
-	}
-
-	public Vector2 GetAimInput() {
-		return new Vector2(Input.GetAxis(aimHorizontal), Input.GetAxis(aimVertical));
 	}
 }

@@ -174,7 +174,7 @@ MonoBehaviour:
   jumpSpeed: 300
   gravity: 30
   maxRotateDistance: 12
-  chargeTime: 1
+  chargeTime: 0.5
   glowColor: {r: 0.5, g: 0.875, b: 1, a: 1}
   pulseFrequency: 8
   pulseAmount: 0.1

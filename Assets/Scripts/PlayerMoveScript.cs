@@ -66,7 +66,7 @@ public class PlayerMoveScript : MonoBehaviour {
 		if (dashing) {
 			DashPlayer();
 		}
-		else {
+		else if (chargeTimeElapsed == 0) {
 			MovePlayer();
 			RotatePlayer();
 		}
@@ -148,14 +148,14 @@ public class PlayerMoveScript : MonoBehaviour {
 			Vector3 lineOrigin = sprite.transform.position - (Vector3)dirVectors[floorDir] * halfWidth;
 			line.SetPositions(new Vector3[] {
 				lineOrigin,
-				lineOrigin + (Vector3)input.GetAimInput().normalized * 100,
+				lineOrigin + (Vector3)input.GetMoveInput().normalized * 100,
 			});
 
 			mat.SetColor("_EmissionColor", Color.Lerp(Color.clear, glowColor, alpha));
 		}
 		else if (Input.GetButtonUp(input.charge)) {
 			if (chargeTimeElapsed >= chargeTime) {
-				Vector3 aimInput = input.GetAimInput();
+				Vector3 aimInput = input.GetMoveInput();
 
 				if (aimInput.magnitude > 0) {
 					Ray dashDirection = new Ray(transform.position, aimInput);
